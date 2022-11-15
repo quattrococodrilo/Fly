@@ -1,0 +1,9 @@
+# syntax=docker/dockerfile:1
+
+FROM node
+
+LABEL maintainer="Fernado Cruz"
+
+WORKDIR /code
+
+EXPOSE 5173

@@ -1,0 +1,47 @@
+version: "3.9"
+
+services:
+  db:
+    image: mysql
+    volumes:
+      - mysql:/var/lib/mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=${DB_PASSWORD}
+      - MYSQL_ROOT_HOST=%
+      - MYSQL_DATABASE=${DB_DATABASE}
+      - MYSQL_USER=${DB_USERNAME}
+      - MYSQL_PASSWORD=${DB_PASSWORD}
+      - MYSQL_ALLOW_EMPTY_PASSWORD=1
+  django:
+    build:
+      context: .
+      dockerfile: Dockerfile_django
+      args:
+        - GROUPID=${GROUPID}
+        - USERID=${USERID}
+    volumes:
+      # - ./backend/config:/code/config
+      # - ./backend/app:/code/app
+      - .:/code
+    ports:
+      - "8000:8000"
+      # - "5173:5173"
+    environment:
+      - DB_DATABASE=${DB_DATABASE}
+      - DB_USERNAME=${DB_USERNAME}
+      - DB_PASSWORD=${DB_PASSWORD}
+    # command: "/entry_point.sh"
+    depends_on:
+      - db
+  node:
+    build:
+      context: .
+      dockerfile: Dockerfile_node
+    ports:
+      - "5173:5173"
+    volumes:
+      - .:/code
+    command: "npm run dev"
+volumes:
+  mysql:
+    driver: local
