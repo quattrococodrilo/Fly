@@ -13,10 +13,10 @@ Clone this repo and:
 
 Fly is inspired in Laravel Sail, so, with this app manager you can:
 
+- `./fly --help`: Show help.
 - `./fly build`: Build image project.
 - `./fly up`: Start services.
 - `./fly down`: Shutdown services.
-- `./fly --help`: Show help.
 - `./fly manage`: Execute a Django command. All applications created with **startapp** will moved to apps directory.
 - `./fly {npm, pnx} {command}`: Execute npm or npx command.
 - `./fly mysql`: Go to MySQL cli.
