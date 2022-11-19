@@ -52,8 +52,8 @@ THIRDPARTY_APPS: list = [
 ]
 
 APP_APPS: list = [
-    # 'users.apps.UsersConfig',
     'apps.core.apps.CoreConfig',
+    'ui.apps.UiConfig',
 ]
 
 INSTALLED_APPS: list = DJANGO_APPS + THIRDPARTY_APPS + APP_APPS

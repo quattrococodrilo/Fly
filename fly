@@ -3,6 +3,7 @@
 # This code is based on https://github.com/laravel/sail/blob/1.x/bin/sail
 
 UNAMEOUT="$(uname -s)"
+APPS_DIR="apps"
 
 # Verify operating system is supported...
 case "${UNAMEOUT}" in
@@ -41,17 +42,17 @@ function display_help {
     echo "Unknown commands are passed to the docker-compose binary."
     echo
     echo "${YELLOW}docker-compose Commands:${NC}"
-    echo "  ${GREEN}manage up${NC}          Start the application"
-    echo "  ${GREEN}manage up -d${NC}       Start the application in the background"
-    echo "  ${GREEN}manage stop${NC}        Stop the application"
-    echo "  ${GREEN}manage restart${NC}     Restart the application"
-    echo "  ${GREEN}manage ps${NC}          Display the status of all containers"
+    echo "  ${GREEN}up${NC}          Start the application"
+    echo "  ${GREEN}up -d${NC}       Start the application in the background"
+    echo "  ${GREEN}stop${NC}        Stop the application"
+    echo "  ${GREEN}restart${NC}     Restart the application"
+    echo "  ${GREEN}ps${NC}          Display the status of all containers"
     echo
     echo "${YELLOW}Pip Commands:${NC}"
     echo "  ${GREEN}fly pip ...${NC}        Run pip command"
     echo
     echo "${YELLOW}Django Manager Commands:${NC}"
-    echo "  ${GREEN}fly manager ...${NC}    Run manager command"
+    echo "  ${GREEN}fly manage ...${NC}    Run manager command"
     echo
     echo "${YELLOW}NPM Commands:${NC}"
     echo "  ${GREEN}fly npm ...${NC}       Run a npm command"
@@ -250,6 +251,6 @@ fi
 
 for arg in "${ARGS[@]}"; do
     if [ "$arg" == 'startapp' ]; then
-        mv "${ARGS[-1]}" app
+        mv "${ARGS[-1]}" $APPS_DIR
     fi
 done

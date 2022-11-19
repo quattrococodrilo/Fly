@@ -20,17 +20,13 @@ services:
         - GROUPID=${GROUPID}
         - USERID=${USERID}
     volumes:
-      # - ./backend/config:/code/config
-      # - ./backend/app:/code/app
       - .:/code
     ports:
-      - "8000:8000"
-      # - "5173:5173"
+      - "80:8000"
     environment:
       - DB_DATABASE=${DB_DATABASE}
       - DB_USERNAME=${DB_USERNAME}
       - DB_PASSWORD=${DB_PASSWORD}
-    # command: "/entry_point.sh"
     depends_on:
       - db
   node:
@@ -41,7 +37,6 @@ services:
       - "5173:5173"
     volumes:
       - .:/code
-    command: "npm run dev"
 volumes:
   mysql:
     driver: local

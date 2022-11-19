@@ -1,3 +1,4 @@
+{% load ui_components %}
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -8,17 +9,13 @@
     <script type="module" src="http://localhost:5173/@vite/client"></script>
     <script type="module" src="http://localhost:5173/src/js/main.js"></script>
   </head>
-  <body
-    class="flex flex-col justify-between h-screen font-sans antialiased bg-udes-blue-100"
-  >
+  <body class="flex flex-col justify-between h-screen font-sans antialiased bg-udes-blue-100">
     <header class="bg-green-200">
-      <div class="bg-green-900 w-60 flex items-center justify-center py-3 pr-3">
-        <h1 class="text-green-500 text-3xl font-bold">QuattrocLabs</h1>
-      </div>
-      <div></div>
+      {% ui_insert "ui/header/navbar.html" %}
     </header>
 
-    <main class="flex-grow"></main>
+    <main class="flex-grow">
+    </main>
 
     <footer class="bg-green-600">
       <ul class="flex flex-col items-center justify-center p-3 text-white">
