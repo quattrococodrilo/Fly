@@ -3,7 +3,7 @@ import path from "path";
 
 export default defineConfig({
   build: {
-    outDir: "./static/js",
+    outDir: "./static/",
     emptyOutDir: false,
     manifest: true,
     rollupOptions: {

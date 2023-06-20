@@ -20,6 +20,8 @@ services:
       - POSTGRES_PASSWORD=${DB_PASSWORD}
     volumes:
       - postgres_data:/var/lib/postgresql/data/
+    ports:
+      - "${DB_PORT}:5432"
   web:
     image: fly-dj4
     build:
@@ -41,7 +43,7 @@ services:
       context: .
       dockerfile: Dockerfile_node
     ports:
-      - "${DB_PORT}:5173"
+      - "5173:5173"
     volumes:
       - .:/code
 volumes:

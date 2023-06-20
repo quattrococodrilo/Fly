@@ -26,7 +26,7 @@ RUN useradd -ms /bin/bash --no-user-group -g $GROUPID -u $USERID fly
 
 COPY start-container /usr/local/bin/start-container
 COPY wait-for-it.sh /
-COPY entry_point_django.sh /
+COPY entry_point_django.sh /entry_point.sh
 COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 RUN chmod +x /usr/local/bin/start-container
 
