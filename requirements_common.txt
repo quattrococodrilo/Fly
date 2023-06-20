@@ -9,4 +9,8 @@
 # tzdata
 Django
 django-environ
-
+django-extensions
+factory_boy
+faker
+ipython
+markdown

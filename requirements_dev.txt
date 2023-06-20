@@ -1,8 +1,0 @@
--r requirements_common.txt
-
-django-extensions
-factory_boy
-faker
-ipython
-markdown
-psycopg2

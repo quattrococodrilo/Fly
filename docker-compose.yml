@@ -21,7 +21,7 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data/
   web:
-    image: Fly-dj4
+    image: fly-dj4
     build:
       context: .
       dockerfile: Dockerfile_django
