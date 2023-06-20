@@ -3,7 +3,7 @@
 # This code is based on https://github.com/laravel/sail/blob/1.x/bin/sail
 
 UNAMEOUT="$(uname -s)"
-APPS_DIR="apps"
+APPS_DIR="./django/app"
 
 # Verify operating system is supported...
 case "${UNAMEOUT}" in
@@ -85,8 +85,8 @@ fi
 export APP_PORT=${APP_PORT:-80}
 export APP_SERVICE=${APP_SERVICE:-"django"}
 export DB_PORT=${DB_PORT:-3306}
-export WWWUSER=${WWWUSER:-$UID}
-export WWWGROUP=${WWWGROUP:-$(id -g)}
+export WWWUSER=${USERID:-$UID}
+export WWWGROUP=${GROUPID:-$(id -g)}
 export FLY_FILES=${FLY_FILES:-""}
 
 # Function that outputs Sail is not running...
@@ -106,6 +106,11 @@ else
     DOCKER_COMPOSE=(docker-compose)
 fi
 
+
+if [ "$APP_DEBUG"  == "True" ] && [ -f "docker-compose-dev.yml" ]; then
+    DOCKER_COMPOSE+=(-f docker-compose-dev.yml)
+fi
+
 function docker_compose_not_exists {
     echo "${BOLD}Unable to find Docker Compose file: '${FILE}'${NC}" >&2
 
@@ -113,7 +118,7 @@ function docker_compose_not_exists {
 }
 
 if [ -n "$FLY_FILES" ]; then
-    # Convert SAIL_FILES to an array...
+    # Convert FLY_FILES to an array...
     IFS=':' read -ra FLY_FILES <<<"$FLY_FILES"
 
     for FILE in "${FLY_FILES[@]}"; do
@@ -153,7 +158,7 @@ if [ -z "$FLY_SKIP_CHECKS" ]; then
     IFS=',' read -ra APP_SERVICE <<<"$APP_SERVICE"
 
     if "${DOCKER_COMPOSE[@]}" ps "$APP_SERVICE" 2>&1 | grep 'Exit\|exited'; then
-        echo "${BOLD}Shutting down old Sail processes...${NC}" >&2
+        echo "${BOLD}Shutting down old Fly processes...${NC}" >&2
 
         "${DOCKER_COMPOSE[@]}" down >/dev/null 2>&1
 
@@ -243,6 +248,18 @@ elif [ "$1" == "mysql" ]; then
         sail_is_not_running
     fi
 
+# Initiate a PostgreSQL CLI terminal session within the "postgres" container...
+elif [ "$1" == "psql" ]; then
+    shift 1
+
+    if [ "$EXEC" == "yes" ]; then
+        ARGS+=(exec)
+        [ ! -t 0 ] && ARGS+=(-T)
+        ARGS+=(db bash -c)
+        ARGS+=("PGPASSWORD=${DB_PASSWORD} psql -U ${DB_USERNAME} ${DB_DATABASE}")
+    else
+        sail_is_not_running
+    fi
 else
     ARGS+=("$@")
 fi
@@ -251,6 +268,6 @@ fi
 
 for arg in "${ARGS[@]}"; do
     if [ "$arg" == 'startapp' ]; then
-        mv "${ARGS[-1]}" $APPS_DIR
+        mv "$APPS_DIR/${ARGS[-1]}" "$APPS_DIR/apps"
     fi
 done

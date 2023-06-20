@@ -1,0 +1,12 @@
+# django-filter
+# djangorestframework
+# djangorestframework-jsonapi
+# inflection
+# mysqlclient
+# python-dotenv
+# pytz
+# sqlparse
+# tzdata
+Django
+django-environ
+
