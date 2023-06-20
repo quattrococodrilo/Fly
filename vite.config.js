@@ -4,7 +4,7 @@ import path from "path";
 export default defineConfig({
   build: {
     outDir: "./static/",
-    emptyOutDir: false,
+    emptyOutDir: true,
     manifest: true,
     rollupOptions: {
       input: "src/js/main.js",
