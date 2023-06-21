@@ -218,7 +218,7 @@ elif [ "$1" == "npm" ]; then
         [ ! -t 0 ] && ARGS+=(-T)
         ARGS+=(node npm "$@")
     else
-        sail_is_not_running
+        fly_is_not_running
     fi
 
 # Proxy npx commands to the "npm" binary on the application container...
@@ -231,7 +231,7 @@ elif [ "$1" == "npx" ]; then
         [ ! -t 0 ] && ARGS+=(-T)
         ARGS+=(node npx "$@")
     else
-        sail_is_not_running
+        fly_is_not_running
     fi
 
 # Initiate a MySQL CLI terminal session within the "mysql" container...
@@ -245,7 +245,7 @@ elif [ "$1" == "mysql" ]; then
         # ARGS+=("MYSQL_PWD=\${DB_PASSWORD} mysql -u \${DB_USERNAME} \${DB_DATABASE}")
         ARGS+=("MYSQL_PWD=${DB_PASSWORD} mysql -u ${DB_USERNAME} ${DB_DATABASE}")
     else
-        sail_is_not_running
+        fly_is_not_running
     fi
 
 # Initiate a PostgreSQL CLI terminal session within the "postgres" container...
@@ -258,7 +258,7 @@ elif [ "$1" == "psql" ]; then
         ARGS+=(db bash -c)
         ARGS+=("PGPASSWORD=${DB_PASSWORD} psql -U ${DB_USERNAME} ${DB_DATABASE}")
     else
-        sail_is_not_running
+        fly_is_not_running
     fi
 else
     ARGS+=("$@")

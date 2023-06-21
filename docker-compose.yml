@@ -26,7 +26,7 @@ services:
     image: fly-dj4
     build:
       context: .
-      dockerfile: Dockerfile_django
+      dockerfile: Dockerfile
       args:
         - GROUPID=${GROUPID}
         - USERID=${USERID}
