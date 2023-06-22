@@ -189,7 +189,7 @@ elif [ "$1" == "pip" ]; then
     if [ "$EXEC" == "yes" ]; then
         ARGS+=(exec -u fly)
         [ ! -t 0 ] && ARGS+=(-T)
-        ARGS+=("$APP_SERVICE" pip "$@")
+        ARGS+=("$APP_SERVICE" venv/bin/pip "$@")
     else
         fly_is_not_running
     fi
@@ -216,7 +216,8 @@ elif [ "$1" == "npm" ]; then
         # ARGS+=(exec -u fly)
         ARGS+=(exec)
         [ ! -t 0 ] && ARGS+=(-T)
-        ARGS+=(node npm "$@")
+        # ARGS+=(node npm "$@")
+        ARGS+=("$APP_SERVICE" npm "$@")
     else
         fly_is_not_running
     fi
