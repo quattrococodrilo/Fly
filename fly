@@ -3,7 +3,7 @@
 # This code is based on https://github.com/laravel/sail/blob/1.x/bin/sail
 
 UNAMEOUT="$(uname -s)"
-APPS_DIR="./django/app"
+APPS_DIR="./apps"
 
 # Verify operating system is supported...
 case "${UNAMEOUT}" in
@@ -202,7 +202,7 @@ elif [ "$1" == "manage" ] || [ "$1" == "man" ]; then
         ARGS+=(exec -u fly)
 
         [ ! -t 0 ] && ARGS+=(-T)
-        ARGS+=("$APP_SERVICE" python manage.py "$@")
+        ARGS+=("$APP_SERVICE" venv/bin/python manage.py "$@")
 
     else
         fly_is_not_running
@@ -269,6 +269,6 @@ fi
 
 for arg in "${ARGS[@]}"; do
     if [ "$arg" == 'startapp' ]; then
-        mv "$APPS_DIR/${ARGS[-1]}" "$APPS_DIR/apps"
+        mv "${ARGS[-1]}" "$APPS_DIR"
     fi
 done
