@@ -1,7 +1,5 @@
 #!/usr/bin/env bash
 
-ls -l
-
 if [ ! -d "/code/venv" ]; then
     python3.11 -m venv venv
 fi
