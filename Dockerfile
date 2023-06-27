@@ -48,6 +48,7 @@ COPY requirements.txt /code
 COPY start-container /usr/local/bin/start-container
 COPY wait-for-it.sh /
 COPY entry_point.sh /
+COPY entry_point_node.sh /
 COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 RUN chmod +x /usr/local/bin/start-container
 

@@ -2,16 +2,6 @@ version: "3.9"
 
 services:
   db:
-    # image: mysql
-    # volumes:
-    #   - mysql:/var/lib/mysql
-    # environment:
-    #   - MYSQL_ROOT_PASSWORD=${DB_PASSWORD}
-    #   - MYSQL_ROOT_HOST=%
-    #   - MYSQL_DATABASE=${DB_DATABASE}
-    #   - MYSQL_USER=${DB_USERNAME}
-    #   - MYSQL_PASSWORD=${DB_PASSWORD}
-    #   - MYSQL_ALLOW_EMPTY_PASSWORD=1
     image: postgres
     restart: always
     environment:
@@ -22,7 +12,8 @@ services:
       - postgres_data:/var/lib/postgresql/data/
     ports:
       - "${DB_PORT}:5432"
-  web:
+  
+  web: &web
     image: fly-dj4
     build:
       context: .
@@ -34,11 +25,43 @@ services:
       - .:/code
     ports:
       - "${APP_PORT}:8000"
-      - "${VITE_PORT}:${VITE_PORT}"
     restart: always
     env_file: .env
     depends_on:
       - db
+
+  node:
+    <<: *web
+    ports:
+      - "${VITE_PORT}:${VITE_PORT}"
+    entrypoint: ["/entry_point_node.sh"]
+
+  pgadmin:
+    image: dpage/pgadmin4
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_EMAIL}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD}
+    ports:
+      - ${PGADMIN_PORT}:80
+    volumes:
+      - pgadmin:/root/.pgadmin
+    depends_on:
+      - db
+
 volumes:
   # mysql:
   postgres_data:
+  pgadmin:
+
+
+    # image: mysql
+    # volumes:
+    #   - mysql:/var/lib/mysql
+    # environment:
+    #   - MYSQL_ROOT_PASSWORD=${DB_PASSWORD}
+    #   - MYSQL_ROOT_HOST=%
+    #   - MYSQL_DATABASE=${DB_DATABASE}
+    #   - MYSQL_USER=${DB_USERNAME}
+    #   - MYSQL_PASSWORD=${DB_PASSWORD}
+    #   - MYSQL_ALLOW_EMPTY_PASSWORD=1

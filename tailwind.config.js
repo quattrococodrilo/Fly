@@ -4,7 +4,7 @@ module.exports = {
     "./ui/templates/ui/**/*.{html,js}",
     "./ui/templatetags/**/*.{html,js,py}",
     "./core/templates/core/**/*.{html,js}",
-    "./apps/**/templates/core/**/*.{html,js}",
+    "./apps/**/templates/**/*.{html,js}",
     "./templates/**/*.{html,js}",
   ],
   theme: {
