@@ -1,13 +1,12 @@
 import { defineConfig } from "vite";
-import path from "path";
 
 export default defineConfig({
   build: {
-    outDir: "./static/",
+    outDir: "./ui/static/ui/",
     emptyOutDir: true,
     manifest: true,
     rollupOptions: {
-      input: "src/js/main.js",
+      input: "ui/vite_src/js/main.js",
     },
   },
   server: {

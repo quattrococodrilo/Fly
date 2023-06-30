@@ -20,7 +20,7 @@ def dd(printable: Any) -> None:
 class FlyTestCaseBase:
     def setUp(self) -> None:
         super().setUp()
-        self.fake = Faker()
+        self.fake: Faker = Faker()
 
     def fake_add_provider(self, provider: str) -> None:
         self.fake.add_provider(provider)

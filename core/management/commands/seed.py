@@ -12,6 +12,9 @@ class Command(BaseCommand):
         )
 
     def handle(self, *args, **options):
+        """
+        Run seeder app_name.seeder_function
+        """
         if not options["seeder"]:
             self.stdout.write("No seeder specified", self.style.ERROR)
             return
@@ -24,15 +27,20 @@ class Command(BaseCommand):
         for seeder in seeder_list:
             module, fn = seeder.rsplit(".")
             
-            full_path_module = f"apps.{module}.seeder.seeders"
-            
-            self.stdout.write(f'{full_path_module}... OK', self.style.SUCCESS)
-            self.stdout.write()
+            apps_dir = "apps." 
+
+            if module == "core":
+                apps_dir = ""
+                
+            full_path_module = f"{apps_dir}{module}.seeder.seeders"
             
             seeder_module = importlib.import_module(full_path_module)
             
             seeder_function = getattr(seeder_module, fn)
             
             seeder_function()
+            
+            self.stdout.write(f'{full_path_module}... OK', self.style.SUCCESS)
+            self.stdout.write()
 
         self.stdout.write(self.style.SUCCESS("Done!"))

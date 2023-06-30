@@ -35,6 +35,7 @@ services:
     ports:
       - "${VITE_PORT}:${VITE_PORT}"
     entrypoint: ["/entry_point_node.sh"]
+    env_file: .env
 
   pgadmin:
     image: dpage/pgadmin4

@@ -7,8 +7,12 @@
         <meta charset="UTF-8" />
         <meta http-equiv="X-UA-Compatible" content="IE=edge" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>Document</title>
+        <title>{% block title %}{% endblock title %}</title>
+
         {% vite %}
+
+        {% block head %}
+        {% endblock head %}
     </head>
     <body class="flex flex-col justify-between h-screen font-sans antialiased bg-udes-blue-100">
         <header>
@@ -23,5 +27,8 @@
             {% block footer %}
             {% endblock footer %}
         </footer>
+
+        {% block scripts %}
+        {% endblock scripts %}
     </body>
 </html>

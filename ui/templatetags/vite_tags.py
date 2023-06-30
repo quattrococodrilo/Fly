@@ -3,6 +3,7 @@ import environ
 import json
 from config import settings 
 from django.utils.safestring import mark_safe
+from django.templatetags.static import static
 
 register = template.Library()
 
@@ -19,12 +20,12 @@ def vite() -> str:
     if settings.DEBUG:
         return mark_safe(
             f'''<script type="module" src="http://localhost:{vite_port}/@vite/client"></script>
-            <script type="module" src="http://localhost:{vite_port}/src/js/main.js"></script>'''
+            <script type="module" src="http://localhost:{vite_port}{settings.VITE_SRC}/js/main.js"></script>'''
         )
     else:
         manifest = json.loads(manifest_path.read_text())
-        css_file = "static/" +  manifest["src/js/main.css"]["file"] 
-        js_file = "static/" +  manifest["src/js/main.js"]["file"]  
+        css_file = static("ui/" +  manifest["src/js/main.css"]["file"])
+        js_file = static("ui/" +  manifest["src/js/main.js"]["file"])  
 
         return mark_safe(
             f'''<link rel="stylesheet" type="text/css" href="{css_file}">

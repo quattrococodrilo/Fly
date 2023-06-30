@@ -48,9 +48,8 @@ THIRD_PARTY_APPS: list[str] = [
 ]
 
 LOCAL_APPS: list[str] = [
-    "core.apps.CoreConfig",
     "ui.apps.UiConfig",
-    "apps.food.apps.FoodConfig",
+    "core.apps.CoreConfig",
 ]
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
@@ -154,10 +153,10 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.0/howto/static-files/
 
-STATIC_URL = "static/"
+STATIC_URL = "/static/"
 STATIC_ROOT = BASE_DIR / "static"
 
-MEDIA_URL = "media/"
+MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
 
 # Default primary key field type
@@ -188,3 +187,10 @@ SHELL_PLUS = env("SHELL_PLUS")
 #     ),
 #     "TEST_REQUEST_DEFAULT_FORMAT": "vnd.api+json",
 # }
+
+# ------------------------------------------------------------
+# Vite
+# ------------------------------------------------------------
+
+VITE_PORT=5173
+VITE_SRC="/ui/vite_src/"
