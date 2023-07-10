@@ -40,6 +40,12 @@ class Command(BaseCommand):
             
             seeder_function()
             
+            # try:
+            #     seeder_function()
+            # except Exception as e:
+            #     self.stdout.write(f"An error occurred: {e}", self.style.ERROR)
+            #     exit(1)
+            
             self.stdout.write(f'{full_path_module}... OK', self.style.SUCCESS)
             self.stdout.write()
 

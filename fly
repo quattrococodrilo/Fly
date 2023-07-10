@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 
 # This code is based on https://github.com/laravel/sail/blob/1.x/bin/sail
+# docker run -it --entrypoint /bin/bash -v .:/code fly-dj4
+# docker run -it --entrypoint /bin/bash --env-file ./.env -v .:/code -p 80:8000 --network=django_blog_translator_fly_network fly-dj4
 
 UNAMEOUT="$(uname -s)"
 APPS_DIR="./apps"
@@ -182,7 +184,7 @@ if [ "$1" == "docker-compose" ]; then
         fly_is_not_running
     fi
 
-# Proxy Composer commands to the "composer" binary on the application container...
+# Proxy pip commands to the "pip" binary on the application container...
 elif [ "$1" == "pip" ]; then
     shift 1
 
@@ -264,6 +266,8 @@ elif [ "$1" == "psql" ]; then
 else
     ARGS+=("$@")
 fi
+
+echo "${DOCKER_COMPOSE[@]} ${ARGS[@]}"
 
 "${DOCKER_COMPOSE[@]}" "${ARGS[@]}"
 

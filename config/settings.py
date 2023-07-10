@@ -50,6 +50,9 @@ THIRD_PARTY_APPS: list[str] = [
 LOCAL_APPS: list[str] = [
     "ui.apps.UiConfig",
     "core.apps.CoreConfig",
+    "apps.blog.apps.BlogConfig",
+    "apps.reviews.apps.ReviewsConfig",
+    "apps.projectp.apps.ProjectpConfig",
 ]
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS

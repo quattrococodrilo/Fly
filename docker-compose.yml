@@ -12,6 +12,8 @@ services:
       - postgres_data:/var/lib/postgresql/data/
     ports:
       - "${DB_PORT}:5432"
+    networks:
+      - fly_network
   
   web: &web
     image: fly-dj4
@@ -29,6 +31,8 @@ services:
     env_file: .env
     depends_on:
       - db
+    networks:
+      - fly_network
 
   node:
     <<: *web
@@ -36,6 +40,8 @@ services:
       - "${VITE_PORT}:${VITE_PORT}"
     entrypoint: ["/entry_point_node.sh"]
     env_file: .env
+    networks:
+      - fly_network
 
   pgadmin:
     image: dpage/pgadmin4
@@ -49,12 +55,16 @@ services:
       - pgadmin:/root/.pgadmin
     depends_on:
       - db
+    networks:
+      - fly_network
 
 volumes:
   # mysql:
   postgres_data:
   pgadmin:
 
+networks:
+  fly_network:
 
     # image: mysql
     # volumes:
