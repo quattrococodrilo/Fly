@@ -9,6 +9,7 @@ import subprocess
 import time
 from os import getenv
 from typing import Any, Dict, List
+from django.core.management import os
 
 import requests
 from colorama import Fore, Style
@@ -33,19 +34,22 @@ class EnvData:
         load_dotenv()
 
         self.APPS_DIR = getenv("APPS_DIR", "./apps")
+        self.APP_PORT = getenv("APP_PORT", "80")
+        self.DB_APP_SERVICE = getenv("DB_HOST", "db")
+        self.DB_HOST = getenv("DB_HOST", "db")
+        self.DB_NAME = getenv("DB_NAME", "postgres")
+        self.DB_PASSWORD = getenv("DB_PASSWORD", "postgres")
+        self.DB_PORT = getenv("DB_PORT", "3306")
+        self.DB_PORT = getenv("DB_PORT", "5432")
+        self.DB_USERNAME = getenv("DB_USERNAME", "postgres")
         self.DJANGO_APP_PORT = getenv("DJANGO_APP_PORT", "80")
         self.DJANGO_APP_SERVICE = getenv("APP_SERVICE", "web")
-        self.NODE_APP_SERVICE = getenv("APP_SERVICE", "node")
-        self.DB_PORT = getenv("DB_PORT", "3306")
-        self.WWWUSER = getenv("USERID", "1000")
-        self.WWWGROUP = getenv("GROUPID", "1000")
+        self.FLY_DJANGO_IMAGE = getenv("FLY_DJANGO_IMAGE", "fly-dj4")
         self.FLY_FILES = getenv("FLY_FILES")
-        self.DB_APP_SERVICE = getenv("DB_HOST", "db")
-        self.DB_NAME = getenv("DB_NAME", "postgres")
-        self.DB_USERNAME = getenv("DB_USERNAME", "postgres")
-        self.DB_PASSWORD = getenv("DB_PASSWORD", "postgres")
-        self.DB_HOST = getenv("DB_HOST", "db")
-        self.DB_PORT = getenv("DB_PORT", "5432")
+        self.FLY_NETWORK = getenv("FLY_NETWORK", "fly_network")
+        self.NODE_APP_SERVICE = getenv("APP_SERVICE", "node")
+        self.WWWGROUP = getenv("GROUPID", "1000")
+        self.WWWUSER = getenv("USERID", "1000")
 
 
 class Printer:
@@ -259,6 +263,7 @@ class Fly:
             NpmCommand().set_main_parser(self.subparsers),
             MySqlCommand().set_main_parser(self.subparsers),
             PostgreSqlCommand().set_main_parser(self.subparsers),
+            DjangoServerRunAloneCommand().set_main_parser(self.subparsers),
         ]
 
     def start_parser(self):
@@ -371,8 +376,8 @@ class DockerComposeCommand(BaseCommand):
     """Execute docker compose commands."""
 
     subparser_dest: str = "docker_compose"
-    command_name: str = "dc"
-    command_help: str = "Exec docker compose commands."
+    command_name: str = "d"
+    command_help: str = "Execute docker compose commands."
 
     def command(self, args):
         self.check_docker()
@@ -415,6 +420,48 @@ class DjangoManageCommand(BaseCommand):
         if "startapp" in args.args:
             shutil.move(args.args[-1], self.ENV.APPS_DIR)
 
+
+class DjangoServerRunAloneCommand(BaseCommand):
+    """Run Django server alone."""
+
+    subparser_dest: str = "django_server"
+    command_name: str = "runserve-alone"
+    command_help: str = "Run Django server alone"
+
+    def command(self, args):
+        self.check_docker()
+
+        web_service = subprocess.Popen(
+            shlex.split(f"{self.ENV.DOCKER_COMPOSE} ps {self.ENV.DJANGO_APP_SERVICE}"),
+            stdout=subprocess.PIPE,
+        )
+
+        grep_data = subprocess.Popen(
+            shlex.split(f"grep {self.ENV.DJANGO_APP_SERVICE}"),
+            stdin=web_service.stdout,
+            stdout=subprocess.PIPE,
+        )
+
+        web_service.stdout.close()
+
+        output, errors = grep_data.communicate()
+
+        output = output.decode('UTF-8').replace('  ', '').split(' ')
+
+        network = pathlib.Path().cwd().name.lower() + "_" + self.ENV.FLY_NETWORK
+
+        self.run_command(
+            f"docker compose stop {self.ENV.DJANGO_APP_SERVICE}",
+        )
+
+        self.run_command(
+            f"docker run -it --entrypoint /bin/bash --env-file ./.env -v .:/code" 
+            f" -p {self.ENV.APP_PORT}:8000 --network={network} {self.ENV.FLY_DJANGO_IMAGE}"
+            " -c \"venv/bin/python manage.py runserver 0.0.0.0:8000\""
+        )
+
+        if "startapp" in args.args:
+            shutil.move(args.args[-1], self.ENV.APPS_DIR)
 
 class NpmCommand(BaseCommand):
     """Execute NPM commands."""
