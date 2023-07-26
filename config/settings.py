@@ -17,6 +17,8 @@ import environ
 env = environ.Env(
     APP_DEBUG=(bool, False),
     APP_ENVIRON=(bool, False),
+    APP_STATIC_URL=(str, "static/"),
+    APP_MEDIA_URL=(str, "media/"),
 )
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -35,7 +37,7 @@ ALLOWED_HOSTS = env("APP_ALLOWED_HOSTS").split(",")
 
 # Application definition
 DJANGO_APPS: list[str] = [
-    "django.contrib.admin",
+    # "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.sessions",
@@ -45,19 +47,25 @@ DJANGO_APPS: list[str] = [
 
 THIRD_PARTY_APPS: list[str] = [
     "django_extensions",
+    "rest_framework",
+    "rest_framework.authtoken",
+]
+
+FLY_APPS: list[str] = [
+    "fly_admin.admin.FlyAdminConfig",
+    "fly_admin.apps.FlyAdminConfig",
+    "core.apps.CoreConfig",
+    "account.apps.AccountConfig",
+    "ui.apps.UiConfig",
 ]
 
 LOCAL_APPS: list[str] = [
-    "ui.apps.UiConfig",
-    "core.apps.CoreConfig",
-    "apps.blog.apps.BlogConfig",
-    "apps.reviews.apps.ReviewsConfig",
-    "apps.projectp.apps.ProjectpConfig",
+    # Here add your local apps.
 ]
 
-INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
+INSTALLED_APPS = FLY_APPS + DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
 
-AUTH_USER_MODEL = "core.User"
+AUTH_USER_MODEL = "account.User"
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
@@ -82,6 +90,7 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
+                "django.template.context_processors.media",
             ],
         },
     },
@@ -156,10 +165,44 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.0/howto/static-files/
 
-STATIC_URL = "/static/"
+STATIC_URL = env("APP_STATIC_URL")
+
 STATIC_ROOT = BASE_DIR / "static"
 
-MEDIA_URL = "/media/"
+# https://docs.djangoproject.com/en/4.2/ref/settings/#std-setting-STATICFILES_DIRS
+# STATICFILES_DIRS = [
+#     BASE_DIR / "static",
+#     ("images", BASE_DIR / "static_images"),
+#     ("css", BASE_DIR / "static_css"),
+# ]
+
+# https://docs.djangoproject.com/en/4.2/ref/settings/#std-setting-STATICFILES_STORAGE
+# Deprecated
+# STATICFILES_STORAGE = "django.contrib.staticfiles.storage.StaticFilesStorage"
+
+# https://docs.djangoproject.com/en/4.2/ref/settings/#std-setting-STORAGES
+STORAGES = {
+    "default": {
+        # https://docs.djangoproject.com/en/4.2/topics/files/#file-storage
+        "BACKEND": "django.core.files.storage.FileSystemStorage",
+    },
+    "staticfiles": {
+        # https://docs.djangoproject.com/en/4.2/ref/contrib/staticfiles/#storages
+        # "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
+        "BACKEND": "django.contrib.staticfiles.storage.ManifestStaticFilesStorage",
+    },
+    # "example": {
+    #     "BACKEND": "django.core.files.storage.FileSystemStorage",
+    #     "OPTIONS": {
+    #         "location": "/example",
+    #         "base_url": "/example/",
+    #     },
+    # },
+}
+
+
+MEDIA_URL = env("APP_MEDIA_URL")
+
 MEDIA_ROOT = BASE_DIR / "media"
 
 # Default primary key field type
@@ -181,7 +224,7 @@ SHELL_PLUS = env("SHELL_PLUS")
 #     "DEFAULT_FILTER_BACKENDS": (
 #         "rest_framework_json_api.filters.QueryParameterValidationFilter",
 #         "rest_framework_json_api.filters.OrderingFilter",
-#         "rest_framework_json_api.django_filters.DjangoFilterBackend",
+#         "rest_framework_json_apidjango_filters.DjangoFilterBackend",
 #         "rest_framework.filters.SearchFilter",
 #     ),
 #     "SEARCH_PARAM": "filter[search]",
@@ -191,9 +234,18 @@ SHELL_PLUS = env("SHELL_PLUS")
 #     "TEST_REQUEST_DEFAULT_FORMAT": "vnd.api+json",
 # }
 
+
+LOGIN_URL = "/accounts/login/"
+LOGIN_REDIRECT_URL = "/accounts/profile/"
+
+# SESSION_ENGINE = "django.contrib.sessions.backends.db"
+# SESSION_SERIALIZER = 'django.contrib.sessions.serializers.JSONSerializer'
+
+
 # ------------------------------------------------------------
 # Vite
 # ------------------------------------------------------------
 
-VITE_PORT=5173
-VITE_SRC="/ui/vite_src/"
+VITE_PORT = env("VITE_PORT")
+
+VITE_SRC = "/ui/vite_src/"

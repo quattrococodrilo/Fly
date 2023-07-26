@@ -29,7 +29,7 @@ class Command(BaseCommand):
             
             apps_dir = "apps." 
 
-            if module == "core":
+            if module == "core" or module == "account":
                 apps_dir = ""
                 
             full_path_module = f"{apps_dir}{module}.seeder.seeders"

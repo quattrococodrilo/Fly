@@ -14,19 +14,17 @@
         {% block head %}
         {% endblock head %}
     </head>
-    <body class="flex flex-col justify-between h-screen font-sans antialiased bg-udes-blue-100">
-        <header>
-            {% block header %}
-            {% endblock header %}
-        </header>
-        <main class="flex-grow">
+    <body class="{% block body_class %} flex flex-col justify-between h-screen font-sans antialiased {% endblock body_class %}">
+        {% block header %}
+        {% endblock header %}
+
+        <main class="{% block main_class %} flex-grow {% endblock main_class %}">
             {% block content %}
             {% endblock content %}
         </main>
-        <footer>
-            {% block footer %}
-            {% endblock footer %}
-        </footer>
+        
+        {% block footer %}
+        {% endblock footer %}
 
         {% block scripts %}
         {% endblock scripts %}

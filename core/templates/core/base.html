@@ -7,12 +7,19 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Code Quattro</title>
+    {% block extrahead %}{% endblock extrahead %}
+    
+    <title>The Fly Project</title>
+    
     {% vite %}
+
+    {% block extrastyle %}{% endblock extrastyle %}
+
+    {% block headscripts %}{% endblock headscripts %}
   </head>
   <body class="flex flex-col justify-between h-screen font-sans antialiased bg-udes-blue-100">
     <header class="bg-green-200">
-      {% ui_insert "ui/header/navbar.html" %}
+      {% include "ui/header/navbar.html" %}
     </header>
 
     <main class="flex-grow">
@@ -25,5 +32,7 @@
         <li>fernando.cruz.dev@gmail.com</li>
       </ul>
     </footer>
+
+    {% block scripts %}{% endblock scripts %}
   </body>
 </html>

@@ -1,14 +1,14 @@
 {
-  "src/js/main.css": {
-    "file": "assets/main-16d8a58f.css",
-    "src": "src/js/main.css"
+  "ui/vite_src/js/main.css": {
+    "file": "assets/main-e58bb5d3.css",
+    "src": "ui/vite_src/js/main.css"
   },
-  "src/js/main.js": {
+  "ui/vite_src/js/main.js": {
     "css": [
-      "assets/main-16d8a58f.css"
+      "assets/main-e58bb5d3.css"
     ],
-    "file": "assets/main-48a2acff.js",
+    "file": "assets/main-56949911.js",
     "isEntry": true,
-    "src": "src/js/main.js"
+    "src": "ui/vite_src/js/main.js"
   }
 }

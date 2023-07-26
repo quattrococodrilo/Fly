@@ -1,10 +1,11 @@
 from django import template
+from django.contrib.admin.options import json
 
 register = template.Library()
 
 
 @register.inclusion_tag("ui/base_component.html", takes_context=True)
-def ui_insert(context, template: str, ctx: str = "", **kwargs):
+def ui_include(context, template: str, ctx: str = "", **kwargs):
     """Insert template in other template.
 
     Args:
@@ -30,4 +31,44 @@ def ui_insert(context, template: str, ctx: str = "", **kwargs):
         **_ctx,
         **kwargs,
         "template": template,
+    }
+
+
+@register.inclusion_tag("ui/form/field.html")
+def form_field(field, label_attrs='', field_attrs=''):
+    """ Render a form field. Field must have a widget.
+
+    """
+    label_attrs_str = ''
+    label_class = ''
+
+    if label_attrs:
+        label_attrs = json.loads(label_attrs)
+        label_attrs_str = ''
+
+        for key, value in label_attrs.items():
+            if key == 'class':
+                label_class = value
+            label_attrs_str += f' {key}="{value}"'
+
+        label_attributes = label_attrs_str.strip()
+
+    if field_attrs:
+        field_attrs = json.loads(field.attrs)
+        field.widget.attr.update(field_attrs)
+
+    field_attrs = json.loads(field_attrs)
+
+    return {
+        "field": field,
+        "label_attributes": label_attrs_str,
+        "label_class": label_class,
+    }
+
+@register.inclusion_tag("ui/form/field_reverse.html")
+def form_field_inline(field, reverse=False):
+
+    return {
+        "field": field,
+        "reverse": reverse
     }

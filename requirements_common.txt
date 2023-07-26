@@ -1,5 +1,4 @@
 # django-filter
-# djangorestframework
 # djangorestframework-jsonapi
 # inflection
 # mysqlclient
@@ -10,9 +9,15 @@
 Django
 django-environ
 django-extensions
+djangorestframework
 factory_boy
 faker
 ipython
 markdown
+pillow
 python-dotenv
 responses
+
+# Dev
+mypy
+autopep8

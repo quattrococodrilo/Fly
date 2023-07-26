@@ -6,10 +6,8 @@ import platform
 import shlex
 import shutil
 import subprocess
-import time
 from os import getenv
 from typing import Any, Dict, List
-from django.core.management import os
 
 import requests
 from colorama import Fore, Style
@@ -33,45 +31,45 @@ class EnvData:
     def __init__(self) -> None:
         load_dotenv()
 
-        self.APPS_DIR = getenv("APPS_DIR", "./apps")
-        self.APP_PORT = getenv("APP_PORT", "80")
-        self.DB_APP_SERVICE = getenv("DB_HOST", "db")
-        self.DB_HOST = getenv("DB_HOST", "db")
-        self.DB_NAME = getenv("DB_NAME", "postgres")
-        self.DB_PASSWORD = getenv("DB_PASSWORD", "postgres")
-        self.DB_PORT = getenv("DB_PORT", "3306")
-        self.DB_PORT = getenv("DB_PORT", "5432")
-        self.DB_USERNAME = getenv("DB_USERNAME", "postgres")
-        self.DJANGO_APP_PORT = getenv("DJANGO_APP_PORT", "80")
-        self.DJANGO_APP_SERVICE = getenv("APP_SERVICE", "web")
-        self.FLY_DJANGO_IMAGE = getenv("FLY_DJANGO_IMAGE", "fly-dj4")
-        self.FLY_FILES = getenv("FLY_FILES")
-        self.FLY_NETWORK = getenv("FLY_NETWORK", "fly_network")
-        self.NODE_APP_SERVICE = getenv("APP_SERVICE", "node")
-        self.WWWGROUP = getenv("GROUPID", "1000")
-        self.WWWUSER = getenv("USERID", "1000")
+        self.APPS_DIR: str = getenv("APPS_DIR", "./apps")
+        self.APP_PORT: str = getenv("APP_PORT", "80")
+        self.DB_APP_SERVICE: str = getenv("DB_HOST", "db")
+        self.DB_HOST: str = getenv("DB_HOST", "db")
+        self.DB_NAME: str = getenv("DB_NAME", "postgres")
+        self.DB_PASSWORD: str = getenv("DB_PASSWORD", "postgres")
+        self.DB_PORT: str = getenv("DB_PORT", "3306")
+        self.VITE_PORT: str = getenv("DB_PORT", "5432")
+        self.DB_USERNAME: str = getenv("DB_USERNAME", "postgres")
+        self.DJANGO_APP_PORT: str = getenv("DJANGO_APP_PORT", "80")
+        self.DJANGO_APP_SERVICE: str = getenv("APP_SERVICE", "web")
+        self.FLY_DJANGO_IMAGE: str = getenv("FLY_DJANGO_IMAGE", "fly-dj4")
+        self.FLY_FILES: str | None = getenv("FLY_FILES")
+        self.FLY_NETWORK: str = getenv("FLY_NETWORK", "fly_network")
+        self.NODE_APP_SERVICE: str = getenv("APP_SERVICE", "node")
+        self.WWWGROUP: str = getenv("GROUPID", "1000")
+        self.WWWUSER: str = getenv("USERID", "1000")
 
 
 class Printer:
     """Handle print."""
 
-    def printer(self, text: str, color: str = "white", style: str = "normal"):
+    def printer(self, text: str, color: str = "white", style: str = "normal") -> None:
         """Print text with color and style"""
         print(getattr(Fore, color.upper()) + getattr(Style, style.upper()) + text)
 
-    def line(self, text: str):
+    def line(self, text: str) -> None:
         self.printer(text)
 
-    def error(self, text: str):
+    def error(self, text: str) -> None:
         self.printer(text, color="red", style="bright")
 
-    def warning(self, text: str):
+    def warning(self, text: str) -> None:
         self.printer(text, color="yellow", style="bright")
 
-    def success(self, text: str):
+    def success(self, text: str) -> None:
         self.printer(text, color="green", style="bright")
 
-    def info(self, text: str):
+    def info(self, text: str) -> None:
         self.printer(text, color="blue", style="bright")
 
 
@@ -411,13 +409,30 @@ class DjangoManageCommand(BaseCommand):
 
     def command(self, args):
         self.check_docker()
+
+        if "startapp" in args.args:
+            app_name = args.args[-1]
+            apps_path = pathlib.Path(self.ENV.APPS_DIR)
+            if (apps_path / app_name).exists():
+                self.printer.error(f"App {app_name} already exists.")
+                exit(1)
+
         cmd = (
             f"{self.ENV.DOCKER_COMPOSE} -f {self.ENV.DOCKER_DEV} exec -u fly "
             f" {self.ENV.DJANGO_APP_SERVICE} venv/bin/python manage.py"
         )
         self.run_command(cmd, extra_args=args.args)
 
-        if "startapp" in args.args:
+        new_app = pathlib.Path(args.args[-1])
+
+        if "startapp" in args.args and new_app.exists():
+            apps_file = new_app / "apps.py"
+            apps_file_content = apps_file.read_text()
+            apps_dir = pathlib.Path(self.ENV.APPS_DIR)
+            apps_file_content = apps_file_content.replace(
+                "name = '", f"name = '{apps_dir.name}."
+            )
+            apps_file.write_text(apps_file_content)
             shutil.move(args.args[-1], self.ENV.APPS_DIR)
 
 
@@ -446,7 +461,7 @@ class DjangoServerRunAloneCommand(BaseCommand):
 
         output, errors = grep_data.communicate()
 
-        output = output.decode('UTF-8').replace('  ', '').split(' ')
+        output = output.decode("UTF-8").replace("  ", "").split(" ")
 
         network = pathlib.Path().cwd().name.lower() + "_" + self.ENV.FLY_NETWORK
 
@@ -455,13 +470,14 @@ class DjangoServerRunAloneCommand(BaseCommand):
         )
 
         self.run_command(
-            f"docker run -it --entrypoint /bin/bash --env-file ./.env -v .:/code" 
+            f"docker run -it --entrypoint /bin/bash --env-file ./.env -v .:/code"
             f" -p {self.ENV.APP_PORT}:8000 --network={network} {self.ENV.FLY_DJANGO_IMAGE}"
-            " -c \"venv/bin/python manage.py runserver 0.0.0.0:8000\""
+            ' -c "venv/bin/python manage.py runserver 0.0.0.0:8000"'
         )
 
         if "startapp" in args.args:
             shutil.move(args.args[-1], self.ENV.APPS_DIR)
+
 
 class NpmCommand(BaseCommand):
     """Execute NPM commands."""
