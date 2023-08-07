@@ -40,3 +40,4 @@ markdown
 # werkzeug
 # easy-thumbnails
 # redis
+colorama
