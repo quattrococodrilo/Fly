@@ -7,7 +7,7 @@ autopep8
 djlint
 factory_boy
 faker
-mypy
+# mypy
 
 # ------------------------------------------------------------
 # django third party
@@ -23,11 +23,11 @@ mypy
 # tzdata
 django-environ
 django-extensions
-django-taggit
-djangorestframework
+# django-taggit
+# djangorestframework
 pillow
 python-dotenv
-social-auth-app-django
+# social-auth-app-django
 django-debug-toolbar
 
 # ------------------------------------------------------------
@@ -35,8 +35,8 @@ django-debug-toolbar
 # ------------------------------------------------------------
 ipython
 markdown
-responses
-pyOpenSSL
-werkzeug
-easy-thumbnails
-redis
+# responses
+# pyOpenSSL
+# werkzeug
+# easy-thumbnails
+# redis

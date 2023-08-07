@@ -81,10 +81,10 @@ DJANGO_APPS_EXTRA = [
 THIRD_PARTY_APPS: list[str] = [
     # "social_django",
     "django_extensions",
-    "rest_framework",
-    "rest_framework.authtoken",
-    "taggit",
-    "easy_thumbnails",
+    # "rest_framework",
+    # "rest_framework.authtoken",
+    # "taggit",
+    # "easy_thumbnails",
     "debug_toolbar",
 ]
 

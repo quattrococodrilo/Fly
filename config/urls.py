@@ -19,11 +19,11 @@ from django.contrib.auth import views as auth_views
 from django.contrib.sitemaps.views import sitemap
 from django.urls import include, path
 
-from apps.blog.sitemaps import PostSitemap
+# from apps.blog.sitemaps import PostSitemap
 from config import settings
 
 sitemaps = {
-    "posts": PostSitemap,
+    # "posts": PostSitemap,
 }
 
 DJANGO_URLS = [

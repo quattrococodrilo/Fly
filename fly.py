@@ -533,7 +533,7 @@ class DjangoServerRunAloneCommand(BaseCommand):
         Argument(
             flags=["--https"],
             action="store_true",
-            help="Run in HTTPS mode.",
+            help="Run in HTTPS mode. Requires: pyOpenSSL, werkzeug",
         ),
     ]
 
@@ -574,7 +574,7 @@ class DjangoServerRunAloneCommand(BaseCommand):
             self.run_command(
                 f"docker run -it --entrypoint /bin/bash --env-file ./.env -v .:/code"
                 f" -p {self.ENV.APP_PORT}:8000 --network={network} {self.ENV.FLY_DJANGO_IMAGE}"
-                ' -c "venv/bin/python manage.py runserver_plus 0.0.0.0:8000"'
+                ' -c "venv/bin/python manage.py runserver 0.0.0.0:8000"'
             )
 
 
