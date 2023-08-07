@@ -14,7 +14,7 @@ services:
       - "${DB_PORT}:5432"
     networks:
       - fly_network
-  
+
   web: &web
     image: fly-dj4
     build:
@@ -27,6 +27,7 @@ services:
       - .:/code
     ports:
       - "${APP_PORT}:8000"
+      - "${SSL_APP_PORT}:8443"
     restart: always
     env_file: .env
     depends_on:
@@ -58,10 +59,20 @@ services:
     networks:
       - fly_network
 
+  redis:
+    image: redis:latest
+    ports:
+      - "${REDIS_PORT}:6379"
+    volumes:
+      - redis-data:/data
+    networks:
+      - fly_network
+
 volumes:
   # mysql:
   postgres_data:
   pgadmin:
+  redis-data:
 
 networks:
   fly_network:

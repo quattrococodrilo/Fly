@@ -1,4 +1,19 @@
+Django
+
+# ------------------------------------------------------------
+# Dev
+# ------------------------------------------------------------
+autopep8
+djlint
+factory_boy
+faker
+mypy
+
+# ------------------------------------------------------------
+# django third party
+# ------------------------------------------------------------
 # django-filter
+# django-hosts
 # djangorestframework-jsonapi
 # inflection
 # mysqlclient
@@ -6,18 +21,22 @@
 # pytz
 # sqlparse
 # tzdata
-Django
 django-environ
 django-extensions
+django-taggit
 djangorestframework
-factory_boy
-faker
-ipython
-markdown
 pillow
 python-dotenv
-responses
+social-auth-app-django
+django-debug-toolbar
 
-# Dev
-mypy
-autopep8
+# ------------------------------------------------------------
+# Other third party
+# ------------------------------------------------------------
+ipython
+markdown
+responses
+pyOpenSSL
+werkzeug
+easy-thumbnails
+redis

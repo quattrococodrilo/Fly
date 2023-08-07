@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import argparse
+from ast import Tuple
 import pathlib
 import platform
 import shlex
@@ -33,6 +34,7 @@ class EnvData:
 
         self.APPS_DIR: str = getenv("APPS_DIR", "./apps")
         self.APP_PORT: str = getenv("APP_PORT", "80")
+        self.SSL_APP_PORT: str = getenv("SSL_APP_PORT", "443")
         self.DB_APP_SERVICE: str = getenv("DB_HOST", "db")
         self.DB_HOST: str = getenv("DB_HOST", "db")
         self.DB_NAME: str = getenv("DB_NAME", "postgres")
@@ -73,6 +75,45 @@ class Printer:
         self.printer(text, color="blue", style="bright")
 
 
+class Argument:
+    """Argument class."""
+
+    def __init__(
+        self,
+        flags: List[str],
+        action: Any | None = None,
+        nargs: Any | None = None,
+        const: Any = None,
+        default: Any = None,
+        type: Any = None,
+        choices: Any = None,
+        required: bool = False,
+        help: str | None = None,
+        metavar: str | None = None,
+        dest: str | None = None,
+    ) -> None:
+        self.flags = flags
+        self.action = action
+        self.nargs = nargs
+        self.const = const
+        self.default = default
+        self.type = type
+        self.choices = choices
+        self.required = required
+        self.help = help
+        self.metavar = metavar
+        self.dest = dest
+
+    def make(self) -> tuple[List[str], Dict[str, Any]]:
+        options: Dict[str, Any] = {}
+
+        for attr, value in vars(self).items():
+            if attr != "flags" and value:
+                options[attr] = value
+
+        return (self.flags, options)
+
+
 class BaseCommand:
     """Base command class."""
 
@@ -81,6 +122,13 @@ class BaseCommand:
     subparser_dest: str
     command_name: str
     command_help: str
+    # https://docs.python.org/3/library/argparse.html#the-add-argument-method
+    command_args: List[Argument] = [
+        Argument(
+            flags=["args"],
+            nargs=argparse.REMAINDER,
+        ),
+    ]
 
     printer: Printer = Printer()
 
@@ -96,7 +144,9 @@ class BaseCommand:
     def add_parser(self, subparsers):
         """Add parser to subparsers."""
         parser = subparsers.add_parser(self.command_name, help=self.command_help)
-        parser.add_argument("args", nargs=argparse.REMAINDER)
+        for arg in self.command_args:
+            [flag, options] = arg.make()
+            parser.add_argument(*flag, **options)
         parser.set_defaults(func=self.command)
 
     def run_command(
@@ -253,6 +303,7 @@ class Fly:
 
         return [
             InstallFlyCommand().set_main_parser(self.subparsers),
+            BuildServicesCommand().set_main_parser(self.subparsers),
             UpServicesCommand().set_main_parser(self.subparsers),
             DownServicesCommand().set_main_parser(self.subparsers),
             DockerComposeCommand().set_main_parser(self.subparsers),
@@ -321,6 +372,29 @@ class InstallFlyCommand(BaseCommand):
                 shutil.move(file, ".")
 
             shutil.rmtree(project_dir)
+
+class BuildServicesCommand(BaseCommand):
+    """Build services."""
+
+    subparser_dest: str = "Build"
+    command_name: str = "build"
+    command_help: str = "Build services."
+
+    def command(self, args):
+        self.check_docker(validate_fly=False)
+        try:
+            self.printer.info("Shuting down old services...")
+            self.run_command(
+                "docker rm -f $(docker ps -aq)",
+                stdout_null=True,
+                stderr_null=True,
+            )
+            self.run_command(
+                f"{self.ENV.DOCKER_COMPOSE} -f {self.ENV.DOCKER_DEV} build",
+                extra_args=args.args,
+            )
+        except KeyboardInterrupt:
+            self.printer.info("Services removed.")
 
 
 class UpServicesCommand(BaseCommand):
@@ -423,6 +497,7 @@ class DjangoManageCommand(BaseCommand):
         )
         self.run_command(cmd, extra_args=args.args)
 
+        new_app_name: str = args.args[-1]
         new_app = pathlib.Path(args.args[-1])
 
         if "startapp" in args.args and new_app.exists():
@@ -434,6 +509,14 @@ class DjangoManageCommand(BaseCommand):
             )
             apps_file.write_text(apps_file_content)
             shutil.move(args.args[-1], self.ENV.APPS_DIR)
+            self.printer.success(f"App {new_app} created.")
+
+            config_app_name: str = (
+                new_app_name.replace("_", " ").title().replace(" ", "")
+            )
+            self.printer.success(
+                f"{apps_dir.name}.{new_app_name}.apps.{config_app_name}Config"
+            )
 
 
 class DjangoServerRunAloneCommand(BaseCommand):
@@ -442,6 +525,17 @@ class DjangoServerRunAloneCommand(BaseCommand):
     subparser_dest: str = "django_server"
     command_name: str = "runserve-alone"
     command_help: str = "Run Django server alone"
+    command_args: List[Argument] = [
+        Argument(
+            flags=["args"],
+            nargs=argparse.REMAINDER,
+        ),
+        Argument(
+            flags=["--https"],
+            action="store_true",
+            help="Run in HTTPS mode.",
+        ),
+    ]
 
     def command(self, args):
         self.check_docker()
@@ -469,14 +563,19 @@ class DjangoServerRunAloneCommand(BaseCommand):
             f"docker compose stop {self.ENV.DJANGO_APP_SERVICE}",
         )
 
-        self.run_command(
-            f"docker run -it --entrypoint /bin/bash --env-file ./.env -v .:/code"
-            f" -p {self.ENV.APP_PORT}:8000 --network={network} {self.ENV.FLY_DJANGO_IMAGE}"
-            ' -c "venv/bin/python manage.py runserver 0.0.0.0:8000"'
-        )
-
-        if "startapp" in args.args:
-            shutil.move(args.args[-1], self.ENV.APPS_DIR)
+        if args.https:
+            self.run_command(
+                f"docker run -it --entrypoint /bin/bash --env-file ./.env -v .:/code"
+                f" -p {self.ENV.SSL_APP_PORT}:8443 --network={network} {self.ENV.FLY_DJANGO_IMAGE}"
+                # ' -c "venv/bin/python manage.py runserver_plus 0.0.0.0:8000"'
+                ' -c "venv/bin/python manage.py runserver_plus 0.0.0.0:8443 --cert-file /tmp/cert.crt --key-file /tmp/cert.key"',
+            )
+        else:
+            self.run_command(
+                f"docker run -it --entrypoint /bin/bash --env-file ./.env -v .:/code"
+                f" -p {self.ENV.APP_PORT}:8000 --network={network} {self.ENV.FLY_DJANGO_IMAGE}"
+                ' -c "venv/bin/python manage.py runserver_plus 0.0.0.0:8000"'
+            )
 
 
 class NpmCommand(BaseCommand):

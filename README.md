@@ -11,39 +11,39 @@ Clone this repo and:
 
 ## Fly Manager
 
-Fly is a command line tool for managing your Django projects.
+Fly is inspired in Laravel Sail, so, with this app manager you can:
 
-positional arguments:
-
-- `./fly.py install`:             Install app.
-- `./fly.py up`:                  Up services.
-- `./fly.py down`:                Down services.
-- `./fly.py d`:                   Execute docker compose commands.
-- `./fly.py pip`:                 Execute pip commands
-- `./fly.py manage`:              Execute Django Manager
-- `./fly.py npm`:                 Execute npm
-- `./fly.py mysql`:               Execute MySql
-- `./fly.py psql`:                Execute PostgreSQL
-- `./fly.py runserve-alone`:      Run Django server alone
+- `./fly --help`: Show help.
+- `./fly build`: Build image project.
+- `./fly up`: Start services.
+- `./fly down`: Shutdown services.
+- `./fly manage`: Execute a Django command. All applications created with **startapp** will moved to apps directory.
+- `./fly {npm, pnx} {command}`: Execute npm or npx command.
+- `./fly mysql`: Go to MySQL cli.
+- `./fly psql`: Go to PostgreSQL cli.
+- `./fly exec {django, node, mysql, exec} {command}`: Execute a command in a container.
 
 ## Create New App
 
-When create a new a app with `./fly manage startapp {app_name}`, the app will be
-created in apps directory, you can change this in the .env file.
+When create a new a app with `./fly manage startapp {app_name}`, the app will be created in apps directory.
 
 ## Seeder
 
 To create a seeder, execute:
 
 ```bash
+
 ./fly manage make_seeder {app_name}
+
 
 ```
 
 With this command you can seed your database.
 
 ```bash
+
 ./fly manage seed --seeder={app_name}.{seeder_function_name}
+
 
 ```
 
@@ -88,13 +88,9 @@ Execute seeder:
 
 ```
 
-## Tailwindcss
-
-Tailwind CSS enables hot reloading in Django, and the classes in the forms can
-be parsed by Tailwind CSS.
 
 ## TODO
 
-1. [X] Change fly manger from Bash to Python.
+1. [ ] Change fly manger from Bash to Python.
 2. [ ] Better documentation for **fly** manager.
 3. [ ] Finish help menú.
