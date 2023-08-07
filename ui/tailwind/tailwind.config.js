@@ -3,7 +3,10 @@ const theme = require("./theme.js");
 const pluginsStatic = require("./plugins.js");
 const AppsToRender = require("./scripts/apps_finder.js");
 
-const [apps, plugins] = AppsToRender("./apps");
+let [apps, plugins] = AppsToRender("./apps");
+
+apps = apps ? apps : [];
+plugins = plugins ? plugins : [];
 
 let pluginsToAdd = plugins.map((plugin) => {
   return require(plugin);

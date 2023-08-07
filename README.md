@@ -1,8 +1,10 @@
 # Fly: Django taking flight
 
-Fly is the way I use Django. In this project I will putting all develop experience.
-
-This implementation allows you develop a Django Web Project with auto reload powered by Vite.
+This project encapsulates my experience with Django. I have found working with
+Docker to be incredibly beneficial, and to streamline its usage, I have created
+a tool that allows for easy management of services. This tool is ./fly.py. In
+addition to this utility, I have included factories, a debugging class, mixins,
+and applications that I find useful.
 
 ## Install
 
